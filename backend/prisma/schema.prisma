@@ -1,0 +1,120 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:./dev.db"
+}
+
+// User model represents users of the application
+model User {
+    id                  String          @id @unique @default(uuid())
+    username            String          @unique
+    profilePicture      Image?          @relation("profilePicture")
+    fullName            String // Changed 'fullname' to 'fullName' for consistency
+    password            String
+    email               String          @unique
+    channels            Channel[]       @relation("memberships")
+    ownChannels         Channel[]       @relation("createdBy")
+    createdAt           DateTime        @default(now())
+    updatedAt           DateTime        @updatedAt
+    directChatsCreated  DirectChat[]    @relation("createdByUser")
+    directChatsReceived DirectChat[]    @relation("receivedByUser")
+    sentMessages        DirectMessage[] @relation("sentByUser")
+    Messages            Message[]
+    ChannelRole         ChannelRole[]
+}
+
+// Image model represents images
+model Image {
+    id          String   @id @unique @default(uuid())
+    filename    String
+    imageType   String
+    size        Int?
+    url         String?
+    base64      Bytes
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    createdBy   User     @relation("profilePicture", fields: [createdById], references: [id], onDelete: Cascade)
+    createdById String   @unique
+}
+
+// DirectChat model represents direct conversations between users
+model DirectChat {
+    id          String          @id @default(uuid())
+    creator     User            @relation("createdByUser", fields: [creatorId], references: [id], onDelete: Cascade)
+    creatorId   String
+    recipient   User            @relation("receivedByUser", fields: [recipientId], references: [id], onDelete: Cascade)
+    recipientId String
+    chatName    String          @unique
+    messages    DirectMessage[]
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+}
+
+// DirectMessage model represents messages exchanged in direct chats
+model DirectMessage {
+    id           String     @id @default(uuid())
+    content      String     @default("")
+    senderId     String
+    sender       User       @relation("sentByUser", fields: [senderId], references: [id])
+    DirectChatId String // DirectChat ID
+    DirectChat   DirectChat @relation(fields: [DirectChatId], references: [id], onDelete: Cascade)
+    read         Boolean    @default(false)
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+}
+
+// Message model represents messages
+model Message {
+    id           String      @id @unique @default(uuid())
+    content      String
+    userId       String
+    writtenBy    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+    subChannel   SubChannel? @relation(fields: [subChannelId], references: [id], onDelete: Cascade)
+    subChannelId String?
+}
+
+// Channel model represents channels where users can communicate
+model Channel {
+    id          String        @id @unique @default(uuid())
+    members     User[]        @relation("memberships")
+    subChannels SubChannel[]  @relation("parentChannel")
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    category    String
+    channelName String        @unique
+    isPublic    Boolean       @default(true)
+    users       Int           @default(0)
+    description String
+    createdById String
+    createdBy   User          @relation("createdBy", fields: [createdById], references: [id], onDelete: NoAction)
+    roles       ChannelRole[]
+}
+
+// SubChannel model represents sub-channels within a channel
+model SubChannel {
+    id              String    @id @unique @default(uuid())
+    name            String
+    messages        Message[]
+    parentChannelId String?
+    type            String
+    description     String?
+    parentChannel   Channel?  @relation("parentChannel", fields: [parentChannelId], references: [id], onDelete: Cascade)
+}
+
+// ChannelRole model represents roles assigned to users in channels
+model ChannelRole {
+    id        String   @id @unique @default(uuid())
+    userId    String
+    channelId String
+    role      String
+    username  String
+    user      User     @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+}

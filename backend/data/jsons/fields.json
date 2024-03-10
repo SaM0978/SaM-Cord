@@ -1,0 +1,91 @@
+{
+  "User": [
+    { "field": "id", "type": "integer", "required": false, "unique": true },
+    { "field": "username", "type": "string", "required": true, "unique": true },
+    { "field": "fullName", "type": "string", "required": true },
+    { "field": "password", "type": "string", "required": true },
+    { "field": "email", "type": "email", "required": true, "unique": true },
+    { "field": "channels", "type": "array", "required": false },
+    { "field": "ownChannels", "type": "array", "required": false },
+    { "field": "createdAt", "type": "datetime", "required": false },
+    { "field": "updatedAt", "type": "datetime", "required": false },
+    { "field": "directChatsCreated", "type": "array", "required": false },
+    { "field": "directChatsReceived", "type": "array", "required": false },
+    { "field": "sentMessages", "type": "array", "required": false },
+    { "field": "receivedMessages", "type": "array", "required": false },
+    { "field": "Messages", "type": "array", "required": false },
+    { "field": "ChannelRole", "type": "array", "required": false }
+  ],
+  "Directchat": [
+    { "field": "id", "type": "integer", "required": false },
+    { "field": "creator", "type": "string", "required": false },
+    { "field": "creatorId", "type": "integer", "required": true },
+    { "field": "recipient", "type": "string", "required": false },
+    { "field": "recipientId", "type": "integer", "required": true },
+    { "field": "chatName", "type": "string", "required": true, "unique": true },
+    { "field": "messages", "type": "array", "required": false },
+    { "field": "createdAt", "type": "datetime", "required": false },
+    { "field": "updatedAt", "type": "datetime", "required": false }
+  ],
+  "Directmessage": [
+    { "field": "id", "type": "integer", "required": false },
+    { "field": "content", "type": "string", "required": true },
+    { "field": "senderId", "type": "integer", "required": true },
+    { "field": "receiverId", "type": "integer", "required": true },
+    { "field": "sender", "type": "string", "required": true },
+    { "field": "receiver", "type": "string", "required": true },
+    { "field": "DirectChatId", "type": "integer", "required": true },
+    { "field": "DirectChat", "type": "object", "required": true },
+    { "field": "createdAt", "type": "datetime", "required": false }
+  ],
+  "Message": [
+    { "field": "id", "type": "integer", "required": false },
+    { "field": "content", "type": "string", "required": true },
+    { "field": "userId", "type": "integer", "required": true },
+    { "field": "writtenBy", "type": "string", "required": true },
+    { "field": "createdAt", "type": "datetime", "required": false },
+    { "field": "updatedAt", "type": "datetime", "required": false },
+    { "field": "subChannel", "type": "string", "required": false },
+    { "field": "subChannelId", "type": "integer", "required": false }
+  ],
+  "Channel": [
+    { "field": "id", "type": "integer", "required": false },
+    { "field": "members", "type": "array", "required": false },
+    { "field": "subChannels", "type": "array", "required": false },
+    { "field": "createdAt", "type": "datetime", "required": false },
+    { "field": "updatedAt", "type": "datetime", "required": false },
+    { "field": "category", "type": "string", "required": false },
+    {
+      "field": "channelName",
+      "type": "string",
+      "required": false,
+      "unique": true
+    },
+    { "field": "isPublic", "type": "boolean", "required": false },
+    { "field": "users", "type": "array", "required": false },
+    { "field": "description", "type": "string", "required": false },
+    { "field": "createdById", "type": "integer", "required": false },
+    { "field": "createdBy", "type": "string", "required": false },
+    { "field": "roles", "type": "array", "required": false }
+  ],
+  "Subchannel": [
+    { "field": "id", "type": "integer", "required": false },
+    { "field": "name", "type": "string", "required": true },
+    { "field": "messages", "type": "array", "required": false },
+    { "field": "parentChannelId", "type": "integer", "required": true },
+    { "field": "type", "type": "string", "required": true },
+    { "field": "description", "type": "string", "required": false },
+    { "field": "parentChannel", "type": "object", "required": true }
+  ],
+  "Channelrole": [
+    { "field": "id", "type": "integer", "required": false },
+    { "field": "userId", "type": "integer", "required": true },
+    { "field": "channelId", "type": "integer", "required": true },
+    { "field": "role", "type": "string", "required": true },
+    { "field": "username", "type": "string", "required": true },
+    { "field": "user", "type": "object", "required": true },
+    { "field": "channel", "type": "object", "required": true },
+    { "field": "createdAt", "type": "datetime", "required": false },
+    { "field": "updatedAt", "type": "datetime", "required": false }
+  ]
+}

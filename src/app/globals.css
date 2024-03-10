@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .main {
+    /* @apply flex; */
+    /* grid-template-s: 330px 1fr; */
+  }
+  #lower {
+    position: absolute;
+    bottom: 0;
+    padding: 1rem;
+  }
+  input {
+    word-wrap: break-word;
+    word-break: break-word;
+    line-break: auto;
+  }
+  .closed {
+    transition: all 0.1ms ease-in-out; /* Specify the transition effect */
+  }
+  /* .login-container {
+    @apply grid;
+    grid-template-rows: 1fr;
+  } */
+}
+
+/* author font-bold mr-2 p-2 rounded-2xl */

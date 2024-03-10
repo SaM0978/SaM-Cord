@@ -1,0 +1,30 @@
+{
+  "Secrets": [
+    "Sercet",
+    "Message",
+    "Password",
+    "Token",
+    "Key",
+    "Code",
+    "Pin",
+    "Hash",
+    "ID",
+    "Access",
+    "Auth",
+    "Session",
+    "Cookie",
+    "Username",
+    "Email",
+    "Phone",
+    "Address",
+    "Location",
+    "City",
+    "State",
+    "Country",
+    "Zip",
+    "Postal",
+    "SSN",
+    "DOB",
+    "Age"
+  ]
+}
