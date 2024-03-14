@@ -12,8 +12,6 @@ async function CreateUser(userData) {
   //  Destructure the userData object
   let { username, password, fullName, email } = userData;
 
-  // console.log(username, password, fullname, email, "Fdf");
-
   let UserExists = await GetUser("email", email);
 
   //  Checking If User Exists

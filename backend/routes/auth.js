@@ -31,7 +31,6 @@ router.get("/testing", isUser, (req, res) => {
 router.post("/get", isUser, async (req, res) => {
   try {
     let user = await GetUser("id", req.user.id);
-    console.log(user);
     res.status(200).json(user);
   } catch (error) {
     console.log(error.message);

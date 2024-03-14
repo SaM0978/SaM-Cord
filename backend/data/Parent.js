@@ -99,7 +99,6 @@ class Parent {
       await this.prisma[`${this.model}`]["delete"]({
         where: { id: id },
       });
-      console.log(`Data with ID ${id} deleted successfully`);
       return "Data Deleted";
     } catch (error) {
       console.error(`Error deleting data with ID ${id}:`, error);
@@ -157,7 +156,6 @@ class Parent {
       await this.prisma[this.model].create({
         data,
       });
-      console.log(`Successfully created sample data for model ${this.model}`);
     } catch (error) {
       console.error(
         `Error creating sample data for model ${this.model}:`,

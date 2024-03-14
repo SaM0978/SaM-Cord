@@ -302,7 +302,6 @@ router.post("/sub/message/update", isUser, async (req, res) => {
       throw new Error("Invalid Input Data");
     const messageInstance = new Message();
     let messagenew = await messageInstance.UpdateMessage(messageId, content);
-    console.log(messagenew);
     res.status(200).json({ msg: "Message Updated" });
   } catch (error) {
     console.error(error);
@@ -315,7 +314,6 @@ router.post("/sub/message/delete", isUser, async (req, res) => {
     if (messageId === undefined) throw new Error("Invalid Input Data");
     const messageInstance = new Message();
     let messagenew = await messageInstance.delete(messageId);
-    console.log(messagenew, "DONe");
     res.status(200).json({ msg: "Message Deleted" });
   } catch (error) {
     console.error(error);
