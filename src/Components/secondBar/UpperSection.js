@@ -9,11 +9,11 @@ import { Divider } from "./LowerSection";
 
 export function UpperSection({ channel, isChat }) {
   const [chats, setChats] = useState([]);
-  const { user, setDirectChatId, setDirectChatName, setUser } = useGlobal();
   const [settingToggle, setSettingToggle] = useState(false);
   const [addChatModalOpen, setaddChatModalOpen] = useState(false);
   const [chatToggle, setChatToggle] = useState(false);
   const [rotateSetting, setRotateSetting] = useState(false);
+  let { user, setDirectChatId, setDirectChatName, setUser } = useGlobal();
 
   // Fetch users from the server when the component mounts
   useEffect(() => {
@@ -39,7 +39,6 @@ export function UpperSection({ channel, isChat }) {
 
   // Function to handle adding a user
   const addUser = async ({ chatName, recipientuserName }) => {
-    console.log(chatName, recipientuserName);
     await fetchApi(
       "directChat/create",
       "POST",
@@ -74,7 +73,7 @@ export function UpperSection({ channel, isChat }) {
           <div className="flex justify-between items-center p-4 bg-gray-800">
             <div id="channelInfo" className="flex items-center">
               <h3 className="text-white text-lg font-bold mr-4">
-                {channel.channelName || user.username}
+                {channel.channelName || user?.username || "ERROR"}
               </h3>
             </div>
 
@@ -96,12 +95,12 @@ export function UpperSection({ channel, isChat }) {
                   {
                     name: "username",
                     placeholder: "Enter Username",
-                    value: user.username,
+                    value: user?.username,
                   },
                   {
                     name: "email",
                     placeholder: "Enter Email",
-                    value: user.email,
+                    value: user?.email,
                   },
                 ]}
                 onFormSubmit={async ({ username, email, password }) => {
@@ -111,7 +110,6 @@ export function UpperSection({ channel, isChat }) {
                     { username, email, password },
                     true
                   );
-                  console.log(response);
                   localStorage.setItem("auth-token", response.authToken);
                   setUser(response.user);
                 }}

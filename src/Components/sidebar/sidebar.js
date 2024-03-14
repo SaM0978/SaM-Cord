@@ -38,8 +38,11 @@ export default function SideBar() {
 
   async function fetchUser() {
     try {
-      const userData = await fetchApi("auth/get", "POST", null, true);
-      setUser(userData);
+      if (localStorage.getItem("auth-token") === null) {
+      } else {
+        const userData = await fetchApi("auth/get", "POST", null, true);
+        setUser(userData);
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -60,7 +63,7 @@ export default function SideBar() {
     if (sidebarItems.length === 0) {
       fetchChannels().then((channels) => setSideBarItems(channels));
     }
-  }, []); // Fetch channels only once on mount
+  }, [fetchUser, sidebarItems]); // Fetch channels only once on mount
 
   return (
     <>
@@ -125,6 +128,13 @@ export default function SideBar() {
                     false
                   );
                   localStorage.setItem("auth-token", response.authToken);
+                  let response2 = await fetchApi(
+                    "auth/get",
+                    "POST",
+                    null,
+                    true
+                  );
+                  setUser(response2.user);
                 }}
                 IALLOWIT={true}
               />

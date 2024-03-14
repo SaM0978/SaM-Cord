@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useGlobal } from "../../app/Context/store";
 import { Headset, User, Mic, Video } from "lucide-react";
 import Modal from "../modal/modal";
+import fetchApi from "@/_api_/fetch";
+// import fs from "fs";
 
 export function LowerSection() {
   return (
@@ -18,7 +20,7 @@ export function LowerSection() {
 }
 function UserInformation() {
   const { user, getLocalThing } = useGlobal();
-  const [profilePicture, setProfilePicture] = useState(null);
+  const [updateProfilePicture, setUpdateProfilePicture] = useState(false); // [profilePicture, setProfilePicture
   const [profileMODAL, setProfileMODAL] = useState(false);
   useEffect(() => {
     const picture = getLocalThing("picture");
@@ -30,30 +32,56 @@ function UserInformation() {
     <div className="whole-lower">
       <div className="flex items-center">
         <div className="flex items-center justify-center bg-gray-600 w-10 h-10 mr-4 rounded-full">
-          {user.profilePicture && (
+          {user?.profilePicture && (
             <img
-              src={`data:image/${user.profilePicture.imageType};base64,${profilePicture}`}
+              onClick={() => {
+                setProfileMODAL(true);
+                setUpdateProfilePicture(true);
+              }}
+              src={`${user?.profilePicture.renderHead},${Buffer.from(
+                user?.profilePicture.base64
+              ).toString("base64")}`}
               alt="profile"
               className="w-10 h-10 rounded-full"
             />
           )}
-          <User
-            size={30}
-            strokeWidth={1.5}
-            onClick={() => setProfileMODAL(true)}
-          />
+
           <Modal
-            modalName="Set Profile Picture"
+            modalName="Profile Picture"
             isOpen={profileMODAL}
             onClose={() => setProfileMODAL(false)}
             fields={[
               { name: "picture", type: "file", placeholder: "Upload Picture" },
             ]}
-            onFormSubmit={async (formData) => {}}
+            giveFormData={true}
+            onFormSubmit={async ({ picture }, ref) => {
+              const reader = new FileReader();
+              reader.onload = async function (event) {
+                let data = event.target.result;
+                await fetchApi(
+                  `auth/${updateProfilePicture ? "profile/update" : "profile"}`,
+                  "POST",
+                  {
+                    extras: {
+                      filename: picture.name,
+                      size: picture.size,
+                      imageType: picture.type,
+                    },
+                    data,
+                  },
+                  true
+                );
+              };
+              if (picture) {
+                reader.readAsDataURL(picture);
+              } else {
+                ref.current.click();
+              }
+            }}
           ></Modal>
         </div>
         <div>
-          <div className="text-sm font-semibold">{user.username}</div>
+          <div className="text-sm font-semibold">{user?.username}</div>
           <div className="text-sm">Online</div>
         </div>
       </div>

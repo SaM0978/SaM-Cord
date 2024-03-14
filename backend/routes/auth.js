@@ -4,11 +4,12 @@ const {
   CreateUser,
   Login,
   Logout,
-  UpdatingUser,
   GenerateAuthToken,
   updateUser,
+  GetUser,
 } = require("../data/User");
 const { isUser } = require("../middlewares/authWares");
+const { Image } = require("../data/Image");
 
 // Router
 const router = express.Router();
@@ -29,7 +30,9 @@ router.get("/testing", isUser, (req, res) => {
 
 router.post("/get", isUser, async (req, res) => {
   try {
-    res.status(200).json(req.user);
+    let user = await GetUser("id", req.user.id);
+    console.log(user);
+    res.status(200).json(user);
   } catch (error) {
     console.log(error.message);
   }
@@ -42,21 +45,21 @@ router.post("/get", isUser, async (req, res) => {
  */
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password, username, fullname } = req.body;
+    const { email, password, username, fullName } = req.body;
 
     console.log(req.body);
 
     // Validation: Check if all required fields are provided
-    if (!email || !password || !username || !fullname) {
+    if ([email, password, username, fullName].includes(undefined)) {
       return res.status(400).json({ msg: "Not all fields have been entered." });
     }
 
     // Create user
     const user = await CreateUser({
-      email: email,
-      password: password,
-      username: username,
-      fullname: fullname,
+      email,
+      password,
+      username,
+      fullName,
     });
 
     // Respond with success message and authentication token
@@ -125,6 +128,68 @@ router.post("/update", isUser, async (req, res) => {
 
     // Respond with success message and updated user information
     res.json({ msg: "User Updated", user, authToken });
+  } catch (error) {
+    console.error(error.message);
+    res.status(401).send(error.message);
+  }
+});
+
+router.post("/profile", isUser, async (req, res) => {
+  try {
+    // Get user information
+
+    let { extras, data } = req.body;
+
+    const ImageInstance = new Image();
+    const image = await ImageInstance.createImage(
+      {
+        userId: req.user.id,
+        base64: data.split(",")[1],
+        renderHead: data.split(",")[0],
+      },
+      extras
+    );
+    // Respond with user information
+    res.json(image);
+    // res.send("SEND");
+  } catch (error) {
+    console.error(error.message);
+    res.status(401).send(error.message);
+  }
+});
+
+router.post("/profile/get", isUser, async (req, res) => {
+  try {
+    // Get user information
+
+    let userId = req.body.userId || req.user.id;
+
+    const ImageInstance = new Image();
+    const image = await ImageInstance.getImage(userId);
+    // Respond with user information
+    res.json(image);
+  } catch (error) {
+    console.error(error.message);
+    res.status(401).send(error.message);
+  }
+});
+
+router.post("/profile/update", isUser, async (req, res) => {
+  try {
+    // Get user information
+    let { extras, data } = req.body;
+
+    const ImageInstance = new Image();
+    const image = await ImageInstance.updateImage(
+      {
+        userId: req.user.id,
+        base64: data.split(",")[1],
+        renderHead: data.split(",")[0],
+      },
+      extras
+    );
+    // Respond with user information
+    res.json(image);
   } catch (error) {
     console.error(error.message);
     res.status(401).send(error.message);

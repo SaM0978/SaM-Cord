@@ -20,6 +20,7 @@ io.on("connection", (socket) => {
     try {
       const channelInstance = new ChannelManager();
       const messages = await channelInstance.getMessages(subChannelId);
+      console.log(messages);
       socket.emit("initial-subchannel-messages", messages);
     } catch (error) {
       console.error("Error fetching initial subchannel messages:", error);
@@ -35,6 +36,7 @@ io.on("connection", (socket) => {
         const channelInstance = new ChannelManager();
         const subChannel = await channelInstance.getSubChannel(subChannelId);
         const message = await subChannel.sendMessage(content, userId);
+        console.log(message);
         io.emit("subchannel-chat-message", message); // Broadcast to all connected clients
       } catch (error) {
         console.error("Error sending subchannel message:", error);
@@ -46,9 +48,10 @@ io.on("connection", (socket) => {
   // Initial direct messages
   socket.on("initial-direct-messages", async (chatId) => {
     try {
-      console.log(chatId);
+      if (!chatId) return;
       const chatInstance = new DirectChat();
       const messages = await chatInstance.getChatMessages(chatId);
+      console.log(messages);
       socket.emit("initial-direct-messages", messages);
     } catch (error) {
       console.error("Error fetching initial direct messages:", error);

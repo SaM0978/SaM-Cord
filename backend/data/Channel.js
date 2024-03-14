@@ -107,8 +107,21 @@ class SubChannel extends Parent {
         subChannel: { connect: { id: this.subChannelId } },
         writtenBy: { connect: { id: userId } },
       },
+      include: {
+        writtenBy: {
+          include: {
+            profilePicture: true,
+          },
+        },
+        subChannel: true,
+      },
     });
-    return newMessage;
+
+    // If user has a profile picture, return it, else return null
+    const userProfilePicture = newMessage.writtenBy.profilePicture
+      ? newMessage.writtenBy.profilePicture.base64
+      : null;
+    return { ...newMessage, userProfilePicture };
   }
 }
 
@@ -117,12 +130,16 @@ class ChannelManager extends Parent {
     super({ model: "channel" });
   }
 
-  async;
-
   async getMessages(subChannelId) {
     const messages = await prisma.message.findMany({
       where: { subChannelId: subChannelId },
-      include: { writtenBy: true },
+      include: {
+        writtenBy: {
+          include: {
+            profilePicture: true,
+          },
+        },
+      },
     });
     return messages;
   }

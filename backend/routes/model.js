@@ -21,6 +21,8 @@ router.post("/unique", async (req, res) => {
     const uniqueFields = getUniqueFields(fields);
     const finalArray = getUniqueValues(instances, uniqueFields);
 
+    console.log(finalArray);
+
     res.json({ uniqueFields: finalArray });
   } catch (error) {
     console.error(error);

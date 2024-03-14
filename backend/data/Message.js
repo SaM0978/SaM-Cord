@@ -1,15 +1,15 @@
 // Imports
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { SecretGen } = require("./Common.js").default;
+const { SecretGen } = require("./Common.js");
 const { Parent } = require("./Parent");
 const prisma = require("./prismaUtils.js");
 
 // Functions
 
 class Message extends Parent {
-  constructor({ model, prisma }) {
-    super({ model, prisma });
+  constructor() {
+    super({ model: "message" });
   }
   async GetMessage(field, value) {
     const includes = ["writtenBy", "SubChannel"];
@@ -93,6 +93,13 @@ class Message extends Parent {
         writtenBy: true,
         content: true,
       },
+    });
+  }
+
+  async UpdateMessage(messageId, content) {
+    return await prisma.message.update({
+      where: { id: messageId },
+      data: { content },
     });
   }
 }

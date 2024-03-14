@@ -3,12 +3,14 @@ const prisma = require("./prismaUtils");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const process = require("process");
+const { Image } = require("./Image");
+const { create } = require("yallist");
 const jwtSecret = process.env.JWT_SECRET || "secret";
 
 // Functions
 async function CreateUser(userData) {
   //  Destructure the userData object
-  let { username, password, fullname, email } = userData;
+  let { username, password, fullName, email } = userData;
 
   // console.log(username, password, fullname, email, "Fdf");
 
@@ -20,15 +22,26 @@ async function CreateUser(userData) {
   //   Encrypting The Password
   password = bcrypt.hashSync(password, 10);
 
+  const ImageInstance = new Image();
+
   //  Creating User
   const user = await prisma.user.create({
     data: {
-      username: username,
-      fullName: fullname,
-      password: password,
-      email: email,
+      username,
+      fullName,
+      password,
+      email,
     },
   });
+
+  await ImageInstance.createImage(
+    {
+      base64: "ZGVmYXVsdA==",
+      userId: user.id,
+      renderHead: "default",
+    },
+    { filename: "default", imageType: "image/png" }
+  );
 
   // Signing User Off
   const authToken = jwt.sign(user, jwtSecret);
@@ -43,6 +56,9 @@ async function GetUser(field, value, throwErr = false) {
   };
   const user = await prisma.user.findUnique({
     where,
+    include: {
+      profilePicture: true,
+    },
   });
   return user;
 }
@@ -85,9 +101,11 @@ async function GenerateAuthToken(userId) {
   return authToken;
 }
 
-async function UpdatingUser(userId, updatingValue) {
+async function UpdatingUser(userId, fieldToUpdate, updatingValue) {
   await GetUser("id", userId);
-  let { fieldToUpdate, value } = updatingValue;
+
+  let value = updatingValue;
+
   if (fieldToUpdate === "password") {
     value = bcrypt.hashSync(value, 10);
   }
@@ -96,6 +114,7 @@ async function UpdatingUser(userId, updatingValue) {
     data: {
       [fieldToUpdate]: value,
     },
+    include: {},
   });
   return updatedUser;
 }

@@ -1,7 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import fetchApi from "../../_api_/fetch";
-import { v4 as uuidv4 } from "uuid";
 import { useGlobal } from "@/app/Context/store";
 
 const MODAL_STYLES = {
@@ -62,6 +61,7 @@ export default function Modal({
   fields,
   onFormSubmit,
   IALLOWIT = false,
+  giveFormData = false,
   deletingValue,
 }) {
   const initialFormValues = Object.fromEntries(
@@ -71,7 +71,7 @@ export default function Modal({
   const [existingValues, setExistingValues] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const { user } = useGlobal();
-
+  const ref = useRef(null);
   useEffect(() => {
     if (model) getExistingValues();
   }, []);
@@ -94,7 +94,6 @@ export default function Modal({
     const isValueUnique = !existingValues.some(
       (item) => item[fieldName] === value
     );
-    console.log(isValueUnique);
     setIsDisabled(!isValueUnique);
   };
 
@@ -106,17 +105,30 @@ export default function Modal({
   const handleSubmit = async (e) => {
     if (!isDisabled) {
       e.preventDefault();
-      await onFormSubmit(formValues);
-      onClose();
+
+      if (fields.some((field) => field.type === "file")) {
+        const fileInputName = fields.find(
+          (field) => field.type === "file"
+        ).name;
+        const file = e.target[fileInputName].files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          [fileInputName]: file,
+        }));
+      }
+      setTimeout(async () => {
+        await onFormSubmit(formValues, ref);
+        onClose();
+      }, 10);
     }
   };
 
   const handleDelete = async () => {
     if (deletingValue && model != "user") {
       await fetchApi(`${model}/delete`, "POST", { id: deletingValue }, true);
-      console.log("INNER");
     }
-    console.log("OUTER");
     onClose();
   };
 
@@ -131,7 +143,7 @@ export default function Modal({
         >
           {modalName}
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
           {fields.map((field) => (
             <React.Fragment key={field.name}>
               {field.type === "select" ? (
@@ -149,21 +161,27 @@ export default function Modal({
                     <option
                       key={optionElement}
                       value={optionElement}
-                      defaultChecked={
-                        field.value == optionElement ? true : false
-                      }
+                      defaultChecked={field.value === optionElement}
                     >
                       {optionElement}
                     </option>
                   ))}
                 </select>
+              ) : field.type === "file" ? (
+                <input
+                  type="file"
+                  name={field.name}
+                  placeholder={field.placeholder || `Enter ${field.name}`}
+                  style={INPUT_STYLES}
+                  required
+                />
               ) : (
                 <input
                   type={field.type || "text"}
                   name={field.name}
                   placeholder={field.placeholder || `Enter ${field.name}`}
                   style={INPUT_STYLES}
-                  value={formValues[field.name]}
+                  value={formValues[field.name] ? formValues[field.name] : ""}
                   onChange={(e) => handleChange(e, field.name)}
                   required
                 />
@@ -180,6 +198,7 @@ export default function Modal({
                   ? true
                   : isDisabled
               }
+              ref={ref}
             >
               Submit
             </button>

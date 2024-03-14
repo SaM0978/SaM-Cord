@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "concurrently": "^8.2.2",
+    "fs": "^0.0.1-security",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.323.0",

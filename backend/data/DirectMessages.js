@@ -4,7 +4,7 @@ const prisma = require("./prismaUtils");
 class DirectChat extends Parent {
   constructor({ sender, receiver, chatName } = {}) {
     super({
-      model: "Directchat",
+      model: "directChat",
     });
     this.sender = sender;
     this.receiver = receiver;
@@ -57,7 +57,11 @@ class DirectChat extends Parent {
         DirectChatId: chatId,
       },
       include: {
-        sender: true,
+        sender: {
+          include: {
+            profilePicture: true,
+          },
+        },
       },
     });
     return messages;
@@ -73,6 +77,9 @@ class DirectChat extends Parent {
   }
 
   async createChat() {
+    if (!this.sender || !this.receiver) {
+      throw new Error("Sender or receiver is null or undefined");
+    }
     const chatName =
       this.chatName || `${this.sender.username} && ${this.receiver.username}`;
     const chat = await prisma.directChat.create({
@@ -103,10 +110,18 @@ class DirectChat extends Parent {
         },
       },
       include: {
-        sender: true,
+        sender: {
+          include: {
+            profilePicture: true,
+          },
+        },
       },
     });
-    return message;
+
+    const userProfilePicture = message.sender.profilePicture
+      ? message.sender.profilePicture.base64
+      : null;
+    return { ...message, userProfilePicture };
   }
 
   async getChats(userId) {

@@ -9,7 +9,8 @@ import { useGlobal } from "@/app/Context/store";
 import { useRouter } from "next/navigation";
 
 export default function Channel({ params: { channelid } }) {
-  const { channel, setChannel, setChannelId, user } = useGlobal();
+  const { channel, setChannel, setChannelId, user, setSubChannelId } =
+    useGlobal();
   const [subChannels, setSubChannels] = useState([]);
   const [createdById, setCreatedById] = useState(null);
   const router = useRouter();

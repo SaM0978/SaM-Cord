@@ -13,6 +13,7 @@ export const GlobalContextProvider = ({ children }) => {
     username: "Guest",
     email: "GuestUser@gmail.com",
     password: "GuestPassword1234",
+    profilePicture: null,
   });
   const [channelId, setChannelId] = useState(null);
   const [subChannelName, setSubChannelName] = useState(null);

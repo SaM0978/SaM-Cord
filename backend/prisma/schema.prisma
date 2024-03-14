@@ -34,6 +34,7 @@ model Image {
     size        Int?
     url         String?
     base64      Bytes
+    renderHead  String
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     createdBy   User     @relation("profilePicture", fields: [createdById], references: [id], onDelete: Cascade)

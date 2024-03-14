@@ -1,3 +1,4 @@
+import jsonwebtoken from "jsonwebtoken";
 export default async function fetchApi(
   url,
   method,
@@ -5,7 +6,7 @@ export default async function fetchApi(
   isToken = false,
   contentType = "application/json"
 ) {
-  const headers = {
+  let headers = {
     Accept: "*/*",
     "Content-Type": contentType, // Always set Content-Type header
   };
