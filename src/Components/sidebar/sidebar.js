@@ -63,7 +63,7 @@ export default function SideBar() {
     if (sidebarItems.length === 0) {
       fetchChannels().then((channels) => setSideBarItems(channels));
     }
-  }, [fetchUser, sidebarItems]); // Fetch channels only once on mount
+  }, []); // Fetch channels only once on mount
 
   return (
     <>

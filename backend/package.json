@@ -122,7 +122,7 @@
   },
   "scripts": {
     "test": "npx test.js",
-    "start": "npx nodemon && cd socket && node server.js"
+    "start": "npx nodemon && npx nodemon socket/server.js"
   },
   "author": "SaM0978",
   "license": "ISC",

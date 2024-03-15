@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx concurrently \"next dev --turbo\" \"cd backend && npm run start\"",
+    "dev": "npx concurrently \"next dev --turbo\" \"cd backend  && node index.js\" \"cd backend/socket && node server.js \"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
